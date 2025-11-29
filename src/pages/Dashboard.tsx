@@ -1,12 +1,44 @@
+import React, { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Calendar, FileText, TrendingUp, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Dashboard = () => {
-  const userName = "Samarth";
-  const dailyTip = "Start with the most challenging subject when your mind is fresh. Research shows peak cognitive performance occurs 2-4 hours after waking.";
+  const [userName, setUserName] = useState(null); // null => loading
+  const navigate = useNavigate();
+
+  const dailyTip =
+    "Start with the most challenging subject when your mind is fresh. Research shows peak cognitive performance occurs 2-4 hours after waking.";
+
+  useEffect(() => {
+  const controller = new AbortController();
+
+  const fetchUser = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/profile", {
+        method: "GET",
+        credentials: "include", // important
+        signal: controller.signal,
+      });
+
+      if (res.status === 401) {
+        navigate("/login");
+        return;
+      }
+
+      const data = await res.json();
+      setUserName(data?.user?.name || "User");
+
+    } catch (err) {
+      console.error(err);
+      navigate("/login");
+    }
+  };
+
+  fetchUser();
+  return () => controller.abort();
+}, [navigate]);
 
   const quickActions = [
     {
@@ -33,7 +65,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <DashboardLayout>
+    
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Welcome Section */}
         <motion.div
@@ -42,31 +74,42 @@ const Dashboard = () => {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl font-bold mb-2">
-            Good to see you again, <span className="gradient-text">{userName}</span>!
+            Good to see you again,{" "}
+            <span className="gradient-text">
+              {userName === null ? "Loading..." : userName}
+            </span>
+            !
           </h1>
-          <p className="text-muted-foreground text-lg">Ready to boost your productivity?</p>
+          <p className="text-muted-foreground text-lg">
+            Ready to boost your productivity?
+          </p>
         </motion.div>
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-3 gap-6">
-          {quickActions.map((action, index) => (
-            <motion.div
-              key={action.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Link to={action.href}>
-                <div className="glass-card p-6 rounded-2xl hover-lift group">
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${action.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <action.icon className="h-7 w-7 text-white" />
+          {quickActions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <motion.div
+                key={action.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <Link to={action.href}>
+                  <div className="glass-card p-6 rounded-2xl hover-lift group">
+                    <div
+                      className={`w-14 h-14 rounded-xl bg-gradient-to-r ${action.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+                    >
+                      <Icon className="h-7 w-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{action.title}</h3>
+                    <p className="text-muted-foreground">{action.description}</p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{action.title}</h3>
-                  <p className="text-muted-foreground">{action.description}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Daily Tip */}
@@ -120,7 +163,7 @@ const Dashboard = () => {
           </motion.div>
         </div>
       </div>
-    </DashboardLayout>
+    
   );
 };
 

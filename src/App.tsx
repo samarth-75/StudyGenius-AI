@@ -13,6 +13,7 @@ import SavedPlans from "./pages/SavedPlans";
 import SavedSummaries from "./pages/SavedSummaries";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import { DashboardLayout } from "./components/DashboardLayout";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
           <Route path="/study-planner" element={<StudyPlanner />} />
           <Route path="/summarizer" element={<Summarizer />} />
           <Route path="/saved-plans" element={<SavedPlans />} />

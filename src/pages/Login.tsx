@@ -14,19 +14,15 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ---------------------------
-  // Submit Login Form
-  // ---------------------------
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // IMPORTANT for sending cookies
+        credentials: "include", 
         body: JSON.stringify({ email, password }),
       });
 
@@ -38,11 +34,15 @@ const Login = () => {
         return;
       }
 
-      toast.success("Welcome back!");
-      navigate("/dashboard");
+      // Store token if backend returns it
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
 
-    } catch (error) {
-      console.error(error);
+      toast.success("Login successful!");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
       toast.error("Something went wrong");
     }
 
@@ -107,7 +107,6 @@ const Login = () => {
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
 
-              {/* Divider */}
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t"></div>
