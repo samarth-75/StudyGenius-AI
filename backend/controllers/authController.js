@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
+import cloudinary from "../utils/cloudinary.js";
 
 dotenv.config();
 
@@ -165,5 +166,36 @@ export const updatePassword = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+export const uploadProfilePhoto = async (req, res) => {
+  try {
+    const fileStr = req.body.image;
+
+    // Upload to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+      folder: "studygenius/profile_photos",
+      width: 300,
+      height: 300,
+      crop: "fill",
+    });
+
+    // Update user in DB
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { profilePhoto: uploadResponse.secure_url },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Profile photo updated",
+      url: user.profilePhoto,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Upload failed" });
   }
 };

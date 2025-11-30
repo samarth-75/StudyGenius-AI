@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
@@ -26,6 +26,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // NEW: user/profile state
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string>("S");
+  const [loadingProfile, setLoadingProfile] = useState<boolean>(true);
+
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "AI Study Planner", href: "/study-planner", icon: Calendar },
@@ -35,26 +40,71 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { name: "Profile", href: "/profile", icon: User },
   ];
 
+  useEffect(() => {
+    // fetch current user profile (uses cookie auth)
+    let mounted = true;
+
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (res.status === 401) {
+          // not logged in
+          setLoadingProfile(false);
+          return;
+        }
+
+        if (!res.ok) {
+          console.error("Failed to fetch profile:", res.statusText);
+          setLoadingProfile(false);
+          return;
+        }
+
+        const data = await res.json();
+        if (!mounted) return;
+
+        const user = data?.user;
+        if (user) {
+          setProfilePhoto(user.profilePhoto || null);
+          setDisplayName((user.name && user.name.charAt(0).toUpperCase()) || "S");
+        }
+      } catch (err) {
+        console.error("Error fetching profile in layout:", err);
+      } finally {
+        if (mounted) setLoadingProfile(false);
+      }
+    };
+
+    fetchProfile();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const handleLogout = async () => {
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include", // IMPORTANT so cookie can be cleared
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // IMPORTANT so cookie can be cleared
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      toast.success("Logged out successfully");
-      navigate("/");
-    } else {
-      toast.error(data.message || "Logout failed");
+      if (res.ok) {
+        toast.success("Logged out successfully");
+        navigate("/");
+      } else {
+        toast.error(data.message || "Logout failed");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+      console.error(err);
     }
-  } catch (err) {
-    toast.error("Something went wrong");
-    console.error(err);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,9 +137,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
               </Button>
-              <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
-                S
-              </div>
+
+              {/* Avatar (uses profilePhoto if available) */}
+              {loadingProfile ? (
+                <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
+              ) : profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
+                  {displayName}
+                </div>
+              )}
             </div>
           </div>
         </div>

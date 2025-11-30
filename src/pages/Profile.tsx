@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,15 @@ import { toast } from "sonner";
 const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState("");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Load logged in user
+  const fileInputRef = useRef(null);
+
+  // Load logged-in user
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -27,6 +30,7 @@ const Profile = () => {
         const data = await res.json();
         setName(data?.user?.name || "");
         setEmail(data?.user?.email || "");
+        setProfilePhoto(data?.user?.profilePhoto || "");
       } catch (err) {
         console.error(err);
       }
@@ -65,7 +69,7 @@ const Profile = () => {
   };
 
   // ----------------------------
-  // Update password
+  // Update Password
   // ----------------------------
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
@@ -102,6 +106,42 @@ const Profile = () => {
     }
   };
 
+  // ----------------------------
+  // Profile photo upload (Cloudinary)
+  // ----------------------------
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Convert image → Base64
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onloadend = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/upload-photo", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ image: reader.result }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data.message || "Upload failed");
+          return;
+        }
+
+        toast.success("Photo updated!");
+        setProfilePhoto(data.url);
+      } catch (err) {
+        console.error(err);
+        toast.error("Error uploading photo");
+      }
+    };
+  };
+
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
@@ -120,34 +160,60 @@ const Profile = () => {
 
         <div className="space-y-6">
           {/* Profile Photo */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="glass-card p-8 rounded-2xl"
-            >
-              <h2 className="text-xl font-semibold mb-6">Profile Photo</h2>
-              <div className="flex items-center gap-6">
-                <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="glass-card p-8 rounded-2xl"
+          >
+            <h2 className="text-xl font-semibold mb-6">Profile Photo</h2>
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                {profilePhoto ? (
+                  <img
+                    src={profilePhoto}
+                    className="w-24 h-24 rounded-full object-cover"
+                  />
+                ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center text-white text-3xl font-semibold">
                     {name?.charAt(0)}
                   </div>
-                  <button className="absolute bottom-0 right-0 p-2 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors">
-                    <Camera className="h-4 w-4" />
-                  </button>
-                </div>
+                )}
 
-                {/* RESTORED UI HERE */}
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Upload a new profile photo
-                  </p>
-                  <Button variant="outline" size="sm">
-                    Change Photo
-                  </Button>
-                </div>
+                {/* Camera Button */}
+                <button
+                  className="absolute bottom-0 right-0 p-2 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  <Camera className="h-4 w-4" />
+                </button>
+
+                {/* Hidden Input */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                />
               </div>
-            </motion.div>
+
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Upload a new profile photo
+                </p>
+
+                {/* Change Photo Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  Change Photo
+                </Button>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Personal Info */}
           <motion.div
@@ -161,13 +227,21 @@ const Profile = () => {
               <Label>Full Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input value={name} onChange={(e) => setName(e.target.value)} className="pl-10" />
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="pl-10"
+                />
               </div>
 
               <Label>Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                />
               </div>
 
               <Button onClick={handleSave} className="btn-gradient">
@@ -186,7 +260,6 @@ const Profile = () => {
             <h2 className="text-xl font-semibold mb-6">Change Password</h2>
 
             <div className="space-y-4">
-
               <Label>Current Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />

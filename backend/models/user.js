@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false,
     },
+    profilePhoto: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
