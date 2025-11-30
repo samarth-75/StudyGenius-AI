@@ -1,41 +1,54 @@
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Calendar, Download, Trash2, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const SavedPlans = () => {
-  const savedPlans = [
-    {
-      id: 1,
-      title: "Mathematics - Calculus",
-      date: "2024-11-20",
-      preview: "14-day comprehensive study plan for Calculus...",
-    },
-    {
-      id: 2,
-      title: "Physics - Quantum Mechanics",
-      date: "2024-11-18",
-      preview: "30-day advanced study plan for Quantum Mechanics...",
-    },
-    {
-      id: 3,
-      title: "Chemistry - Organic Chemistry",
-      date: "2024-11-15",
-      preview: "21-day intensive study plan for Organic Chemistry...",
-    },
-  ];
+  const [plans, setPlans] = useState<any[]>([]);
+  const navigate = useNavigate();
 
-  const handleView = (id: number) => {
-    toast.success("Opening study plan...");
+  useEffect(() => {
+    const fetchPlans = async () => {
+      const res = await fetch("http://localhost:5000/api/plans/all", {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (res.ok) setPlans(data.plans);
+    };
+
+    fetchPlans();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`http://localhost:5000/api/plans/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      toast.success("Plan deleted");
+      setPlans(plans.filter((p) => p._id !== id));
+    } else {
+      toast.error(data.message);
+    }
   };
 
-  const handleDownload = (id: number) => {
-    toast.success("Downloading study plan...");
-  };
+  const handleDownload = (plan: any) => {
+    const blob = new Blob([plan.plan], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
 
-  const handleDelete = (id: number) => {
-    toast.success("Study plan deleted");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${plan.title}.txt`;
+    a.click();
+
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -55,9 +68,9 @@ const SavedPlans = () => {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {savedPlans.map((plan, index) => (
+          {plans.map((plan, index) => (
             <motion.div
-              key={plan.id}
+              key={plan._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -69,12 +82,14 @@ const SavedPlans = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold mb-1">{plan.title}</h3>
-                  <p className="text-sm text-muted-foreground">{plan.date}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(plan.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
 
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {plan.preview}
+                {plan.plan.slice(0, 120)}...
               </p>
 
               <div className="flex gap-2">
@@ -82,23 +97,17 @@ const SavedPlans = () => {
                   variant="outline"
                   size="sm"
                   className="flex-1"
-                  onClick={() => handleView(plan.id)}
+                  onClick={() => navigate(`/saved-plans/${plan._id}`)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   View
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDownload(plan.id)}
-                >
+
+                <Button variant="outline" size="sm" onClick={() => handleDownload(plan)}>
                   <Download className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDelete(plan.id)}
-                >
+
+                <Button variant="outline" size="sm" onClick={() => handleDelete(plan._id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

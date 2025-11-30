@@ -46,15 +46,41 @@ const Summarizer = () => {
   };
 
   const handleCopy = () => {
-    if (summary) {
-      navigator.clipboard.writeText(summary.summary);
-      toast.success("Summary copied!");
-    }
-  };
+  if (!summary) return;
 
-  const handleSave = () => {
-    toast.success("Summary saved!");
-  };
+  const fullText =
+    `📘 SUMMARY\n${summary.summary}\n\n `+
+    `🔹 KEY POINTS:\n${summary.bulletPoints?.map(p => "• " + p).join("\n")}\n\n `+
+    `🔑 KEY TERMS:\n${summary.keyTerms?.join(", ")}\n\n `+
+    `🃏 FLASHCARDS:\n${summary.flashcards
+      ?.map(fc => `Q: ${fc.question}\nA: ${fc.answer}\n`)
+      .join("\n")}`;
+
+  navigator.clipboard.writeText(fullText);
+  toast.success("Full summary copied!");
+};
+
+  const handleSave = async () => {
+  if (!summary) return;
+
+  const title = inputText.substring(0, 40) + "...";
+
+  const res = await fetch("http://localhost:5000/api/summary/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      title,
+      summary,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) return toast.error(data.message || "Failed to save");
+
+  toast.success("Summary saved!");
+};
 
   return (
     <DashboardLayout>

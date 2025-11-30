@@ -14,6 +14,8 @@ import SavedSummaries from "./pages/SavedSummaries";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { DashboardLayout } from "./components/DashboardLayout";
+import SingleSummary from "./pages/SingleSummary";
+import ViewPlan from "./pages/ViewPlan";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +35,8 @@ const App = () => (
           <Route path="/saved-plans" element={<SavedPlans />} />
           <Route path="/saved-summaries" element={<SavedSummaries />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/summary/:id" element={<SingleSummary />} />
+          <Route path="/saved-plans/:id" element={<ViewPlan />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
