@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./db.js";
 import authRoutes from "./routes/auth.js";
 import cors from "cors";
+import aiRoutes from "./routes/aiRoutes.js";
+import summarizerRoutes from "./routes/summarizerRoutes.js";
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ connectDB().catch(err => {
 
 // routes
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/summarize", summarizerRoutes);
 
 // example protected route (alternate)
 app.get("/api/hello-protected", async (req, res) => {

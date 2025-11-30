@@ -199,3 +199,4 @@ export const uploadProfilePhoto = async (req, res) => {
     res.status(500).json({ message: "Upload failed" });
   }
 };
+

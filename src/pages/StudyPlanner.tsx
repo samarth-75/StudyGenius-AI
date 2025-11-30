@@ -20,55 +20,46 @@ const StudyPlanner = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {
-    if (!subject || !topic || !difficulty || !totalDays || !studyStyle) {
-      toast.error("Please fill in all fields");
+  if (!subject || !topic || !difficulty || !totalDays || !studyStyle) {
+    toast.error("Please fill in all fields");
+    return;
+  }
+
+  setIsGenerating(true);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/ai/study-plan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        subject,
+        topic,
+        difficulty,
+        hoursPerDay: hoursPerDay[0],
+        totalDays,
+        studyStyle,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.message || "Failed to generate plan");
+      setIsGenerating(false);
       return;
     }
 
-    setIsGenerating(true);
-    
-    // Simulate AI generation
-    setTimeout(() => {
-      const mockPlan = `
-**${subject} - ${topic} Study Plan**
+    setPlan(data.plan);
+    toast.success("AI Study Plan generated!");
 
-**Duration:** ${totalDays} days | **Daily Study Time:** ${hoursPerDay[0]} hours | **Difficulty:** ${difficulty}
+  } catch (error) {
+    toast.error("Something went wrong");
+    console.error(error);
+  }
 
-**Week 1: Foundation Building**
-- Day 1-2: Introduction to core concepts
-- Day 3-4: Deep dive into fundamental theories
-- Day 5-7: Practice problems and review
-
-**Week 2: Advanced Topics**
-- Day 8-10: Complex problem-solving
-- Day 11-12: Real-world applications
-- Day 13-14: Mock tests and assessments
-
-**Study Tips for ${studyStyle} Learners:**
-${studyStyle === "Visual" ? "- Use diagrams, charts, and mind maps\n- Watch educational videos\n- Create visual summaries" : ""}
-${studyStyle === "Theory" ? "- Read textbooks thoroughly\n- Take detailed notes\n- Summarize each chapter" : ""}
-${studyStyle === "Practice" ? "- Solve numerous problems\n- Work on practical exercises\n- Apply concepts hands-on" : ""}
-${studyStyle === "Mixed" ? "- Combine all learning methods\n- Alternate between theory and practice\n- Use various resources" : ""}
-
-**Daily Schedule:**
-- ${hoursPerDay[0] > 3 ? "Morning: 2 hours of focused study" : "Morning: 1 hour of focused study"}
-- ${hoursPerDay[0] > 3 ? "Afternoon: 1 hour of practice" : "Afternoon: 30 mins practice"}
-- ${hoursPerDay[0] > 3 ? "Evening: 1 hour of review" : "Evening: 30 mins review"}
-      `;
-      
-      setPlan(mockPlan);
-      setIsGenerating(false);
-      toast.success("Study plan generated successfully!");
-    }, 2000);
-  };
-
-  const handleSave = () => {
-    toast.success("Study plan saved!");
-  };
-
-  const handleDownload = () => {
-    toast.success("Downloading study plan...");
-  };
+  setIsGenerating(false);
+};
 
   return (
     <DashboardLayout>
@@ -195,14 +186,14 @@ ${studyStyle === "Mixed" ? "- Combine all learning methods\n- Alternate between 
               <h2 className="text-2xl font-semibold">Generated Plan</h2>
               {plan && (
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={handleSave}>
+                  {/* <Button variant="outline" size="sm" onClick={handleSave}>
                     <Save className="h-4 w-4 mr-2" />
                     Save
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleDownload}>
                     <Download className="h-4 w-4 mr-2" />
                     PDF
-                  </Button>
+                  </Button> */}
                 </div>
               )}
             </div>
