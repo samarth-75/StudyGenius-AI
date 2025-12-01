@@ -17,11 +17,11 @@ const sendToken = (user, statusCode, res) => {
   });
 
   const cookieOptions = {
-    httpOnly: true,           // cannot be accessed by JS
-    secure: false,            // set true in production (HTTPS)
-    sameSite: "strict",
-    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
-  };
+  httpOnly: true,
+  secure: true,          // required for HTTPS (Vercel + Render)
+  sameSite: "none",      // required for cross-site cookies
+  expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+};
 
   // Send response
   res
