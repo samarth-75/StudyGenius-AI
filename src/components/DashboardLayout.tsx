@@ -53,7 +53,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -90,7 +90,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/logout", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
