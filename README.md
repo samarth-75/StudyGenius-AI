@@ -1,73 +1,82 @@
-# Welcome to your Lovable project
+🚀 StudyGenius AI – Your Personal AI-Powered Study Assistant
 
-## Project info
+An end-to-end MERN Stack project that brings intelligent study planning, notes summarization, productivity tools, and real-time AI assistance into one seamless platform.
 
-**URL**: https://lovable.dev/projects/0ac57de3-aedc-48e9-8d34-29eecc6253c2
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+📌 About the Project
 
-**Use Lovable**
+StudyGenius AI is a full-scale AI-powered web application designed to help students plan, learn, and revise smarter.
+This project showcases complete MERN-stack development, including:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0ac57de3-aedc-48e9-8d34-29eecc6253c2) and start prompting.
+Building REST APIs
 
-Changes made via Lovable will be committed automatically to this repo.
+User Authentication (JWT)
 
-**Use your preferred IDE**
+AI Integrations
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+State Management & UI/UX
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Deployment (Frontend + Backend)
 
-Follow these steps:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+🔧 Tech Stack
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Frontend
 
-**Edit a file directly in GitHub**
+React.js
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Vite
 
-**Use GitHub Codespaces**
+TypeScript
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Tailwind CSS
 
-## What technologies are used for this project?
+shadcn-ui
 
-This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Backend
 
-## How can I deploy this project?
+Node.js
 
-Simply open [Lovable](https://lovable.dev/projects/0ac57de3-aedc-48e9-8d34-29eecc6253c2) and click on Share -> Publish.
+Express.js
 
-## Can I connect a custom domain to my Lovable project?
+MongoDB (Mongoose)
 
-Yes, you can!
+JWT Authentication
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+AI API Integration
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+
+---
+
+✨ Core Features
+
+📘 AI Study Planner
+
+Creates smart, personalized study plans based on syllabus, time, and goals.
+
+📝 AI Notes Summarizer
+
+Upload or paste content to generate clean, structured summaries.
+
+🎯 Smart Dashboard
+
+Shows saved plans, summaries, progress, and personalized suggestions.
+
+🔐 Authentication
+
+Secure login/signup using JWT, password hashing, and route protection.
+
+📂 Saved Plans & Notes
+
+View and manage all your AI-generated content from a single page.
+
+⚡ Fast UI (Vite + Tailwind + shadcn)
+
+Super-smooth UI built for students who don’t like waiting.
