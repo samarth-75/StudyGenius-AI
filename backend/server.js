@@ -14,12 +14,19 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = "https://study-genius-a6dlgw94l-samarth-75s-projects.vercel.app";
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://study-genius-a6dlgw94l-samarth-75s-projects.vercel.app",
+  "https://your-render-backend.onrender.com"
+];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  })
+);
 
 app.use(express.json({limit: '10mb'}));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
