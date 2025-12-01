@@ -14,8 +14,10 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = "https://study-genius-a6dlgw94l-samarth-75s-projects.vercel.app";
+
 app.use(cors({
-  origin: ["http://localhost:8080", "http://localhost:5173"],
+  origin: allowedOrigins,
   credentials: true,
 }));
 

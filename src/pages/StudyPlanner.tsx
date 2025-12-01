@@ -31,7 +31,7 @@ const StudyPlanner = () => {
     setIsGenerating(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/study-plan", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/study-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -81,7 +81,7 @@ const StudyPlanner = () => {
 
     const title = `${subject} - ${topic} Plan`;
 
-    const res = await fetch("http://localhost:5000/api/plans/save", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/plans/save`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

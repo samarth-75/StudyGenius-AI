@@ -22,7 +22,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -45,7 +45,7 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/update-profile",
+        `${import.meta.env.VITE_API_URL}/api/auth/update-profile`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -79,7 +79,7 @@ const Profile = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/auth/update-password",
+        `${import.meta.env.VITE_API_URL}/api/auth/update-password`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -119,7 +119,7 @@ const Profile = () => {
 
     reader.onloadend = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/upload-photo", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/upload-photo`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

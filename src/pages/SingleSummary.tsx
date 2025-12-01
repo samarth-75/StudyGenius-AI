@@ -11,7 +11,7 @@ const SingleSummary = () => {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/summary/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/summary/${id}`, {
           credentials: "include",
         });
 

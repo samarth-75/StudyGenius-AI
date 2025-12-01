@@ -12,7 +12,7 @@ const SavedPlans = () => {
 
   useEffect(() => {
     const fetchPlans = async () => {
-      const res = await fetch("http://localhost:5000/api/plans/all", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/plans/all`, {
         credentials: "include",
       });
 
@@ -24,7 +24,7 @@ const SavedPlans = () => {
   }, []);
 
   const handleDelete = async (id: string) => {
-    const res = await fetch(`http://localhost:5000/api/plans/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/plans/${id}`, {
       method: "DELETE",
       credentials: "include",
     });

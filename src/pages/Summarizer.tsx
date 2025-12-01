@@ -20,7 +20,7 @@ const Summarizer = () => {
     setIsGenerating(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/summarize/text", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/summarize/text`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -65,7 +65,7 @@ const Summarizer = () => {
 
   const title = inputText.substring(0, 40) + "...";
 
-  const res = await fetch("http://localhost:5000/api/summary/save", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/summary/save`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

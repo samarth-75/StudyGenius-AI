@@ -12,7 +12,7 @@ const SavedSummaries = () => {
 
   useEffect(() => {
     const fetchSummaries = async () => {
-      const res = await fetch("http://localhost:5000/api/summary/all", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/summary/all`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -29,7 +29,7 @@ const SavedSummaries = () => {
 
   // DELETE SUMMARY
   const handleDelete = async (id: string) => {
-    const res = await fetch(`http://localhost:5000/api/summary/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/summary/${id}`, {
       method: "DELETE",
       credentials: "include",
     });

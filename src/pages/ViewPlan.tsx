@@ -14,7 +14,7 @@ const ViewPlan = () => {
 
   useEffect(() => {
     const fetchPlan = async () => {
-      const res = await fetch(`http://localhost:5000/api/plans/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/plans/${id}`, {
         credentials: "include",
       });
 
@@ -28,7 +28,7 @@ const ViewPlan = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    const res = await fetch(`http://localhost:5000/api/plans/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/plans/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
