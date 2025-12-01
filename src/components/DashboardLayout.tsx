@@ -31,6 +31,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [displayName, setDisplayName] = useState<string>("S");
   const [loadingProfile, setLoadingProfile] = useState<boolean>(true);
 
+  // NEW: Notification popup state
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+
+  const triggerNotification = () => {
+    setShowNotificationPopup(true);
+    setTimeout(() => setShowNotificationPopup(false), 2500);
+  };
+
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "AI Study Planner", href: "/study-planner", icon: Calendar },
@@ -41,7 +49,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   ];
 
   useEffect(() => {
-    // fetch current user profile (uses cookie auth)
     let mounted = true;
 
     const fetchProfile = async () => {
@@ -52,13 +59,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         });
 
         if (res.status === 401) {
-          // not logged in
-          setLoadingProfile(false);
-          return;
-        }
-
-        if (!res.ok) {
-          console.error("Failed to fetch profile:", res.statusText);
           setLoadingProfile(false);
           return;
         }
@@ -67,9 +67,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         if (!mounted) return;
 
         const user = data?.user;
+
         if (user) {
           setProfilePhoto(user.profilePhoto || null);
-          setDisplayName((user.name && user.name.charAt(0).toUpperCase()) || "S");
+          setDisplayName(
+            (user.name && user.name.charAt(0).toUpperCase()) || "S"
+          );
         }
       } catch (err) {
         console.error("Error fetching profile in layout:", err);
@@ -89,7 +92,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     try {
       const res = await fetch("http://localhost:5000/api/auth/logout", {
         method: "POST",
-        credentials: "include", // IMPORTANT so cookie can be cleared
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -133,23 +136,36 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative">
+              {/* Updated Bell Icon */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={triggerNotification}
+              >
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
               </Button>
 
-              {/* Avatar (uses profilePhoto if available) */}
+              {/* Avatar (click → navigate to /profile) */}
               {loadingProfile ? (
                 <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
-              ) : profilePhoto ? (
-                <img
-                  src={profilePhoto}
-                  alt="avatar"
-                  className="w-10 h-10 rounded-full object-cover"
-                />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
-                  {displayName}
+                <div
+                  onClick={() => navigate("/profile")}
+                  className="cursor-pointer"
+                >
+                  {profilePhoto ? (
+                    <img
+                      src={profilePhoto}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
+                      {displayName}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -196,6 +212,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </Button>
             </div>
           </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* 🔔 Notification Popup */}
+      <AnimatePresence>
+        {showNotificationPopup && (
+          <motion.div
+            initial={{ y: -80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -80, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed top-16 right-6 z-50 bg-gradient-primary text-white px-4 py-3 rounded-xl shadow-lg"
+          >
+            View Progress section coming soon!
+          </motion.div>
         )}
       </AnimatePresence>
 

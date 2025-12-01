@@ -8,6 +8,7 @@ import aiRoutes from "./routes/aiRoutes.js";
 import summarizerRoutes from "./routes/summarizerRoutes.js";
 import summaryRoutes from "./routes/summaryRoutes.js";
 import studyPlanRoutes from "./routes/studyPlanRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/summarize", summarizerRoutes);
 app.use("/api/summary", summaryRoutes);
 app.use("/api/plans", studyPlanRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // example protected route (alternate)
 app.get("/api/hello-protected", async (req, res) => {
